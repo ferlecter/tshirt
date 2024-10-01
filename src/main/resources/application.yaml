@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: tshirt
+  datasource:
+    # URL connection to database (spring-security is database name)
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/tshirt
+    username: postgres
+    password: TshirT@2@2@
+  token:
+    signing:
+      key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
+  flyway: #flyway automatically uses the datasource from the application to connect to the DB
+    enabled: true # enables flyway database migration
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-on-validation-failure: true
