@@ -15,3 +15,5 @@ spring:
     locations: classpath:db/migration
     validate-on-migrate: true
     clean-on-validation-failure: true
+feign:
+  viaCep: https://viacep.com.br/ws
