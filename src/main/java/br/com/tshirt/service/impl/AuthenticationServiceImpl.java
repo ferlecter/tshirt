@@ -1,21 +1,18 @@
 package br.com.tshirt.service.impl;
 
-import br.com.tshirt.entities.Role;
-import br.com.tshirt.entities.User;
-import br.com.tshirt.repository.UserRepository;
-import br.com.tshirt.service.Exception.BusinessException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import br.com.tshirt.dao.request.SignUpRequest;
 import br.com.tshirt.dao.request.SigninRequest;
 import br.com.tshirt.dao.response.JwtAuthenticationResponse;
+import br.com.tshirt.entities.Role;
+import br.com.tshirt.entities.User;
+import br.com.tshirt.repository.UserRepository;
 import br.com.tshirt.service.AuthenticationService;
+import br.com.tshirt.service.Exception.BusinessException;
 import br.com.tshirt.service.JwtService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -41,11 +38,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signin(SigninRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-        var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            var jwt = jwtService.generateToken(user);
+            return JwtAuthenticationResponse.builder().token(jwt).build();
+        }
+        throw new IllegalArgumentException("Invalid email or password.");
     }
 }
